@@ -1,17 +1,28 @@
-import React from 'react'
+// Used useEffect to dispatch the fetchOrders
+//  action when the component mounts.
+import React, {useEffect} from 'react'
+// Imported connect from react-redux and fetchOrders 
+// from actions file.
+import { connect } from 'react-redux' 
+import { fetchOrders } from '../state/actions'
 
-export default function OrderList() {
-  const orders = []
+// Replaced the hardcoded orders array with the orders prop
+function OrderList({ orders, fetchOrders }) {
+  useEffect(() => {
+    fetchOrders()
+  }, [fetchOrders])
+
+  // const orders = []
   return (
     <div id="orderList">
       <h2>Pizza Orders</h2>
       <ol>
         {
-          orders.map(() => {
+          orders.map((order, index) => {
             return (
-              <li key={1}>
+              <li key={index}>
                 <div>
-                  order details here
+                {order.customer} ordered a size {order.size} with {order.toppings} toppings
                 </div>
               </li>
             )
@@ -33,3 +44,17 @@ export default function OrderList() {
     </div>
   )
 }
+
+// mapStateToProps is used to map the
+//  orders state from the Redux store 
+//  to the orders prop of the OrderList
+//   component
+const mapStateToProps = (state) => {
+  return { orders: state.orders.orders }
+}
+
+// mapDispatchToProps is used to map the fetchOrders 
+// action creator to a prop of the same name
+const mapDispatchToProps = { fetchOrders }
+
+export default connect(mapStateToProps, mapDispatchToProps)(OrderList)
