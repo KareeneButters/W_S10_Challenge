@@ -35,22 +35,6 @@ export const fetchOrders = () => {
 
 export const addOrder = (order) => {
     return (dispatch) => {
-        // Create a map of toppings
-        const toppingsMap = {
-            '1': 'Pepperoni',
-            '2': 'Green Peppers',
-            '3': 'Pineapple',
-            '4': 'Mushrooms',
-            '5': 'Ham',
-          }
-
-          // Transform the toppings into an array
-    const toppings = Object.keys(order)
-    .filter(key => order[key] === true && toppingsMap[key])
-    .map(key => toppingsMap[key]);
-    
-  const transformedOrder = { ...order, toppings };
-
       axios
         .post('http://localhost:9009/api/pizza/order', order) 
         .then((response) => {
@@ -60,5 +44,6 @@ export const addOrder = (order) => {
         .catch((error) => {
           // handle the error
         })
+        
     }
   }

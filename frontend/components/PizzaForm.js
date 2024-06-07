@@ -31,6 +31,7 @@ function PizzaForm({ addOrder }) {
 // to the state
 const handleSubmit = (e) => {
   e.preventDefault()
+  
   // Dispatch an action to add the new order to the state
   addOrder(form)
   // Reset the form
