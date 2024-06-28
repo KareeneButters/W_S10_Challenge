@@ -7,6 +7,9 @@ export const GET_ORDERS_START = 'GET_ORDERS_START'
 export const GET_ORDERS_SUCCESS = 'GET_ORDERS_SUCCESS'
 export const GET_ORDERS_FAILURE = 'GET_ORDERS_FAILURE'
 export const ADD_ORDER = 'ADD_ORDER'
+export const ADD_ORDER_START = 'ADD_ORDER_START'
+export const ADD_ORDER_SUCCESS = 'ADD_ORDER_SUCCESS'
+export const ADD_ORDER_FAILURE = 'ADD_ORDER_FAILURE'
 
 // create an action creator function that uses Redux Thunk to perform the async operation.
 
@@ -24,7 +27,10 @@ export const fetchOrders = () => {
         dispatch({ type: GET_ORDERS_SUCCESS, payload: response.data })
       })
       .catch((error) => {
-        dispatch({ type: GET_ORDERS_FAILURE, payload: error })
+
+        const errorMessage = error.response ? error.response.data.message : error.message
+
+        dispatch({ type: GET_ORDERS_FAILURE, payload: errorMessage })
       })
   }
 }
@@ -35,14 +41,21 @@ export const fetchOrders = () => {
 
 export const addOrder = (order) => {
     return (dispatch) => {
+      dispatch({type: ADD_ORDER_START })
+
       axios
         .post('http://localhost:9009/api/pizza/order', order) 
         .then((response) => {
-           
-          dispatch({ type: ADD_ORDER, payload: response.data })
+          console.log(response)
+          dispatch({ type: ADD_ORDER_SUCCESS, payload: response.data.data })
+          // dispatch({ type: ADD_ORDER, payload: response.data.data })
         })
         .catch((error) => {
+
+          const errorMessage = error.response ? error.response.data.message : error.message
+
           // handle the error
+          dispatch({ type: ADD_ORDER_FAILURE, payload: errorMessage })
         })
         
     }

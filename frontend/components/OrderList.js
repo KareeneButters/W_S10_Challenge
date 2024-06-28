@@ -1,6 +1,6 @@
 // Used useEffect to dispatch the fetchOrders
 //  action when the component mounts.
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 // Imported connect from react-redux and fetchOrders 
 // from actions file.
 import { connect } from 'react-redux' 
@@ -12,32 +12,38 @@ function OrderList({ orders, fetchOrders }) {
     fetchOrders()
   }, [fetchOrders])
 
+  const [selectedSize, setSelectedSize] = useState('All')
+console.log(orders)
   // const orders = []
   return (
     <div id="orderList">
       <h2>Pizza Orders</h2>
       <ol>
-        {
-          orders.map((order, index) => {
-            return (
-              <li key={index}>
-                <div>
-                {order.customer} ordered a size {order.size} with {order.toppings} toppings
-                </div>
-              </li>
-            )
-          })
-        }
-      </ol>
+    {
+      orders
+        .filter(order => selectedSize === 'All' || order.size === selectedSize)
+        .map((order, index) => {
+          return (
+            <li key={index}>
+              <div>
+                {order.customer} ordered a size {order.size} with {(order.toppings?.length || "no")} toppings
+              </div>
+            </li>
+          )
+        })
+    }
+  </ol>
       <div id="sizeFilters">
         Filter by size:
         {
           ['All', 'S', 'M', 'L'].map(size => {
-            const className = `button-filter${size === 'All' ? ' active' : ''}`
+            const className = `button-filter${size === selectedSize ? ' active' : ''}`
             return <button
               data-testid={`filterBtn${size}`}
               className={className}
-              key={size}>{size}</button>
+              key={size}
+              onClick={() => setSelectedSize(size)}
+              >{size}</button>
           })
         }
       </div>

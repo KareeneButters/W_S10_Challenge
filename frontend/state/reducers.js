@@ -3,7 +3,10 @@ import {
     GET_ORDERS_START,
     GET_ORDERS_SUCCESS,
     GET_ORDERS_FAILURE,
-    ADD_ORDER
+    ADD_ORDER,
+    ADD_ORDER_START,
+    ADD_ORDER_SUCCESS,
+    ADD_ORDER_FAILURE,
   } from './actions'
 
 
@@ -26,11 +29,12 @@ const initialState = {
         return { ...state, isLoading: false, orders: action.payload, error: null }
       case GET_ORDERS_FAILURE:
         return { ...state, isLoading: false, error: action.payload }
-        case ADD_ORDER:
-            return {
-              ...state,
-              orders: [...state.orders, action.payload]
-            }
+          case ADD_ORDER_START:
+              return { ...state, isLoading: true, error: null }
+          case ADD_ORDER_SUCCESS:
+              return { ...state, isLoading: false, orders: [...state.orders, action.payload], error: null }
+          case ADD_ORDER_FAILURE:
+              return { ...state, isLoading: false, error: action.payload }
       default:
         return state
     }

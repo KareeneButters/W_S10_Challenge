@@ -14,16 +14,24 @@ const initialFormState = { // suggested
 
 
 
-function PizzaForm({ addOrder }) {
+function PizzaForm({ addOrder, isLoading, error }) {
 
-  const [form, setForm] = useState(initialFormState);
+  const [form, setForm] = useState(initialFormState)
+  const [validationErrors, setValidationErrors] = useState({})
 
   const handleInputChange = (e) => {
-    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value
     setForm({
       ...form,
       [e.target.name]: value
     })
+  }
+
+  const validateForm = () => {
+    const errors = {}
+    if (!form.fullName) errors.fullName = "fullName is required"
+    if (!form.size) errors.size = "size must be one of the following values"
+    return errors
   }
 
 // addOrder in handleSubmit function 
@@ -32,17 +40,38 @@ function PizzaForm({ addOrder }) {
 const handleSubmit = (e) => {
   e.preventDefault()
   
+  const errors = validateForm()
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors)
+      return
+    }
+
+setForm({...form, isOrderPending: true})
+
+  const newForm = {...form} 
+  const valueTosubmbit = {
+    fullName: form.fullName,
+    size: form.size,
+    toppings: [],
+  }
+  for (let key in newForm ) {
+    if (newForm[key] === true) {
+      valueTosubmbit.toppings.push(key)
+    } 
+  }
   // Dispatch an action to add the new order to the state
-  addOrder(form)
+  addOrder(valueTosubmbit)
   // Reset the form
   setForm(initialFormState)
+  setValidationErrors({})
 }
 
   return (
     <form onSubmit={handleSubmit}>
       <h2>Pizza Form</h2>
-      {true && <div className='pending'>Order in progress...</div>}
-      {true && <div className='failure'>Order failed: fullName is required</div>}
+      {isLoading && <div className='pending'>Order in progress...</div>}
+      {error && <div className='failure'>Order failed: {error}</div>}
+
 
       <div className="input-group">
         <div>
@@ -56,6 +85,7 @@ const handleSubmit = (e) => {
             value={form.fullName}
             onChange={handleInputChange}
           />
+          {validationErrors.fullName && <div className='error'>{validationErrors.fullName}</div>}
         </div>
       </div>
 
@@ -69,6 +99,7 @@ const handleSubmit = (e) => {
             <option value="M">Medium</option>
             <option value="L">Large</option>
           </select>
+          {validationErrors.size && <div className='error'>{validationErrors.size}</div>}
         </div>
       </div>
 
@@ -95,4 +126,9 @@ const handleSubmit = (e) => {
 }
 const mapDispatchToProps = { addOrder }
 
-export default connect(null, mapDispatchToProps)(PizzaForm)
+const mapStateToProps = state => ({
+  isLoading: state.orders.isLoading,
+  error: state.orders.error,
+})
+
+export default connect(mapStateToProps, mapDispatchToProps, null)(PizzaForm)
